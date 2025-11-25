@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="zh-HK"> <head> <meta charset="UTF-8" /> <title>粵語填詞卡牌遊戲 - 首頁</title> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <link rel="stylesheet" href="styles.css" /> <!-- QR Scanner Library（如需實機掃描，可以用 html5-qrcode） --> <script src="https://unpkg.com/html5-qrcode"></script> </head> <body> <header class="top-bar"> <div class="logo">粵語填詞卡牌遊戲</div> </header> <main> <!-- 遊戲簡介 --> <section class="section intro"> <div class="intro-text"> <h1>廣東歌旋律題目卡</h1> <p>抽一張實體題目卡，根據卡上的五線譜旋律同主題，填寫你自己嘅歌詞。</p> <p>你可以用手機相機掃 QR Code，或者直接輸入題目編號進入題目頁。</p> </div>
+      <!-- 手動輸入題目編號 -->
+  <div class="intro-card">
+    <h2>輸入題目編號</h2>
+    <p class="small-note">例子：001、002、010、035…</p>
+    <form id="question-form">
+      <div class="form-row">
+        <label for="question-id">題目編號：</label>
+        <input
+          id="question-id"
+          type="text"
+          placeholder="例如：001"
+          maxlength="3"
+        />
+      </div>
+      <button type="submit" class="btn primary">前往題目頁</button>
+    </form>
+  </div>
+</section>
+
+<!-- 掃描 QR Code 區域 -->
+<section class="section">
+  <h2>用相機掃描 QR Code</h2>
+  <p class="melody-desc">
+    按下面按鈕開啟相機，對準題目卡上的 QR Code。掃描成功後會自動打開對應題目頁。
+  </p>
+
+  <button id="start-scan" class="btn primary">開啟相機掃描</button>
+  <button id="stop-scan" class="btn ghost" style="display:none;">停止掃描</button>
+
+  <div id="reader" class="qr-reader" style="display:none;"></div>
+  <p id="scan-result" class="small-note"></p>
+</section>
+
+<!-- 遊戲玩法說明 -->
+<section class="section">
+  <h2>遊戲玩法簡介</h2>
+  <ul class="howto-list">
+    <li>1. 抽一張旋律題目卡，睇清楚題目同五線譜旋律。</li>
+    <li>2. 用 QR Code 或輸入題號，打開對應嘅網上題目頁。</li>
+    <li>3. 播放「旋律示範」理解旋律，再用「純伴奏」練習唱出自己填嘅歌詞。</li>
+    <li>4. 可以同組員比拼創意，互相評分。</li>
+  </ul>
+</section>
+</main> <footer class="footer"> <p>粵語歌詞填寫卡牌遊戲｜首頁</p> </footer> <script> // 處理手動輸入題目編號 const form = document.getElementById('question-form'); form.addEventListener('submit', function (e) { e.preventDefault(); const raw = document.getElementById('question-id').value.trim(); if (!raw) return; // 將例如 "1" 變成 "001" const num = parseInt(raw, 10); if (isNaN(num) || num <= 0) { alert('請輸入有效題目編號（例如 001）。'); return; } const id = String(num).padStart(3, '0'); // 001, 002... window.location.href = `q${id}.html`; }); // QR Code 掃描（利用 html5-qrcode） let scanner = null; const startBtn = document.getElementById('start-scan'); const stopBtn = document.getElementById('stop-scan'); const readerDiv = document.getElementById('reader'); const scanResult = document.getElementById('scan-result'); startBtn.addEventListener('click', () => { readerDiv.style.display = 'block'; startBtn.style.display = 'none'; stopBtn.style.display = 'inline-block'; scanner = new Html5Qrcode('reader'); scanner .start( { facingMode: 'environment' }, // 後置鏡頭 { fps: 10, qrbox: 250 }, (decodedText) => { scanResult.textContent = '已掃描：' + decodedText; // 假設 QR Code 直接是網址，例如 https://your-site.com/q001.html window.location.href = decodedText; }, (errorMessage) => { // 掃描失敗可以忽略或寫 log } ) .catch((err) => { console.error(err); scanResult.textContent = '無法開啟相機，請檢查權限。'; }); }); stopBtn.addEventListener('click', () => { if (scanner) { scanner.stop().then(() => { scanner.clear(); scanner = null; readerDiv.style.display = 'none'; startBtn.style.display = 'inline-block'; stopBtn.style.display = 'none'; scanResult.textContent = ''; }); } }); </script> </body> </html>
